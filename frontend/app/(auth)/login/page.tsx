@@ -5,10 +5,11 @@ import Logo from '@/components/logo'
 
 const Login = () => {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
+
       <main className="flex-grow flex flex-col md:flex-row">
         {/* Left side - Login Form */}
-        <div className="w-full md:w-1/2 flex items-center justify-center p-8 bg-white">
+        <div className="w-full md:w-1/2 flex items-center justify-center p-8 bg-background">
           <LoginForm />
         </div>
 
