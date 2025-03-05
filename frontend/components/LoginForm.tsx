@@ -14,7 +14,7 @@ const LoginForm = () => {
             Please sign in to your account
             </p>
           </div>
-          <form className="mt-8 space-y-6" action="#" method="POST">
+          <form className="mt-8 space-y-6" action="/chat" method="POST">
             <div className="space-y-4 rounded-md shadow-sm">
               <div>
                 <Label htmlFor="email-address">Email address</Label>

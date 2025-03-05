@@ -82,7 +82,7 @@ const Admin = () => {
                   {user.role !== "Admin" && (
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <Button variant="destructive">Delete</Button>
+                        <Button className="bg-red-600 text-white">Delete</Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>

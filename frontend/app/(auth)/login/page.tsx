@@ -1,6 +1,6 @@
 import React from 'react'
 import LoginForm from "@/components/LoginForm"
-import Logo from '@/components/logo'
+
 
 
 const Login = () => {
@@ -15,7 +15,6 @@ const Login = () => {
 
         {/* Right side - Website Title and Logo */}
         <div className="w-full md:w-1/2 bg-gray-100 flex flex-col items-center justify-center p-8">
-        <Logo className="mb-12" size="lg" />
           <h1 className="text-4xl md:text-6xl font-bold text-center text-gray-800 mb-8 leading-tight">
             Velora
           </h1>

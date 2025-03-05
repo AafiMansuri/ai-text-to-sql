@@ -11,24 +11,28 @@ if __name__ == "__main__":
         print(f"Error: No DDL found for view '{view_name}'")
         exit(1)
     
-    question = input("User: ").strip()
+    while True:
+        question = input("User: ").strip()
 
-    if not question:
-        print("Error: No question provided!")
-        exit(1)
+        if not question:
+            print("Error: No question provided!")
+            exit(1)
 
-    sql_query = generate_sql(user_input=question, ddl=ddl_statement)
+        if question.lower() == "exit":
+            exit(1)
+            
+        sql_query = generate_sql(user_input=question, ddl=ddl_statement)
 
-    print("\nGenerated SQL Query:")
-    print(sql_query)
+        print("\nGenerated SQL Query:")
+        print(sql_query)
 
 
-    try:
-        result = execute_query(sql_query)
-        if result.empty:
-            print("\nNo results found.")
-        else:
-            print("\nQuery Results:")
-            print(result)
-    except Exception as e:
-        print(f"\nError executing the query: {e}")
+        try:
+            result = execute_query(sql_query)
+            if result.empty:
+                print("\nNo results found.")
+            else:
+                print("\nQuery Results:")
+                print(result)
+        except Exception as e:
+            print(f"\nError executing the query: {e}")
