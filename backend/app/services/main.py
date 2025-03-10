@@ -4,7 +4,7 @@ from ddl_loader import load_ddl
 
 if __name__ == "__main__":
     view_name = "students_view"
-
+    role = "user"
     ddl_statement = load_ddl(view_name)
 
     if not ddl_statement:
@@ -28,7 +28,7 @@ if __name__ == "__main__":
 
 
         try:
-            result = execute_query(sql_query)
+            result = execute_query(sql_query,role)
             if result.empty:
                 print("\nNo results found.")
             else:

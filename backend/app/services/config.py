@@ -3,5 +3,6 @@ import os
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+DB_URL_USER = os.getenv("DB_URL_USER")
+DB_URL_ADMIN = os.getenv("DB_URL_ADMIN")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL")
