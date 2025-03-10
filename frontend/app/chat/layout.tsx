@@ -15,8 +15,6 @@ export default function Layout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <div className="min-h-screen bg-background text-foreground flex flex-col">
             
@@ -24,7 +22,5 @@ export default function Layout({
             {children}
           </div>
         </ThemeProvider>
-      </body>
-    </html>
   );
 }

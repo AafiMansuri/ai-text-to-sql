@@ -3,7 +3,7 @@ import "@/app/globals.css";
 import { ThemeProvider } from '@/components/theme-provider'
 import { Navbar } from "@/components/navbar";
 import AdminNavbar from "@/components/admin-navbar";
-
+import { ClerkProvider } from "@clerk/nextjs"
 
 export const metadata: Metadata = {
   title: "Text to SQL",
@@ -16,15 +16,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body>
+    <ClerkProvider>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <div className="min-h-screen bg-background text-foreground flex flex-col">
             <AdminNavbar/>
             {children}
           </div>
         </ThemeProvider>
-      </body>
-    </html>
+    </ClerkProvider>
   );
 }

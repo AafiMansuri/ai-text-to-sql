@@ -1,3 +1,4 @@
+import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import "@/app/globals.css";
 import { ThemeProvider } from '@/components/theme-provider'
@@ -16,13 +17,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <div className="min-h-screen bg-background text-foreground flex flex-col">
-            {children}
-          </div>
-        </ThemeProvider>
-      </body>
-    </html>
+        <body>
+          <ClerkProvider>
+            <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+              <div className="min-h-screen bg-background text-foreground flex flex-col">
+                {children}
+              </div>
+            </ThemeProvider>
+          </ClerkProvider>
+        </body>
+      </html>
   );
 }
