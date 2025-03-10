@@ -1,6 +1,6 @@
 import React from 'react'
 import LoginForm from "@/components/LoginForm"
-
+import { Sparkles } from 'lucide-react'
 
 
 const Login = () => {
@@ -16,11 +16,12 @@ const Login = () => {
         {/* Right side - Website Title and Logo */}
         <div className="w-full md:w-1/2 bg-gray-100 flex flex-col items-center justify-center p-8">
           <h1 className="text-4xl md:text-6xl font-bold text-center text-gray-800 mb-8 leading-tight">
-            Velora
+          ChatQL
           </h1>
-          <p className="text-xl md:text-2xl text-center text-gray-600 max-w-md leading-relaxed">
-          Speak to your database like never before. Think. Ask. Discover.
-          </p>
+          <div className="flex items-center justify-center text-xl text-muted-foreground">
+                    <Sparkles className="h-4 w-4 mr-2" />
+                    <span>Talk to Your Data. Get Answers Instantly.</span>
+                  </div>
         </div>
       </main>
     </div>

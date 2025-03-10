@@ -18,14 +18,14 @@ export const Navbar = () => {
   }, [])
 
     return (
-        <header className=" sticky top-0 z-10 bg-background ">
+        <header className="border-b sticky top-0 z-10 bg-background ">
           <div className="w-full mx-auto flex items-center h-16 px-4">
             <div className="flex-1">
               <DatabaseSelector />
             </div>
     
             <div className="flex-1 flex justify-center">
-              <h1 className="text-2xl font-bold">Velora</h1>
+              <h1 className="text-2xl font-bold">ChatQL</h1>
             </div>
     
             <div className="flex-1 flex items-center justify-end gap-2">
