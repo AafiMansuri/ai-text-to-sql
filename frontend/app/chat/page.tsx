@@ -63,7 +63,7 @@ const ChatInterface = () => {
                   <div className="bg-primary/10 p-3 rounded-full mb-4">
                     <Database className="h-10 w-10 text-primary" />
                   </div>
-                  <h1 className="text-3xl font-bold tracking-tight mb-2">Welcome to ChatQL</h1>
+                  <h1 className="text-3xl font-bold tracking-tight mb-2">Welcome to AskDB</h1>
                   <p className="text-lg text-muted-foreground max-w-md mb-6">
                     Talk to Your Data. Get Answers Instantly.
                   </p>

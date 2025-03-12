@@ -10,7 +10,7 @@ import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "@/comp
 
 
 const CreateUser = () => {
-  const { signUp } = useSignUp() // Clerk's SignUp API
+  const { signUp, isLoaded, setActive } = useSignUp() // Clerk's SignUp API
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
@@ -36,14 +36,13 @@ const CreateUser = () => {
     setVerificationCode(value)
   }
 
-  
-
   const handleRoleChange = (value: string) => {
     setFormData((prev) => ({ ...prev, role: value }))
   }
 
 const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
     setError(null)
     setSuccess(null)
 
@@ -58,6 +57,8 @@ const handleSubmit = async (e: React.FormEvent) => {
       return
     }
 
+    if (!isLoaded) return
+    
     setLoading(true)
     try {
       console.log("Attempting to create user...");
@@ -73,7 +74,7 @@ const handleSubmit = async (e: React.FormEvent) => {
       console.log("User creation attempt completed.");
       
       // Prepare email verification step
-      await signUp.prepareEmailAddressVerification()
+      await signUp.prepareEmailAddressVerification({strategy:'email_code'})
       setShowOTPField(true) // Show verification input
     } catch (err: any) {
       console.error("Error creating user:", err)
@@ -89,42 +90,9 @@ const handleSubmit = async (e: React.FormEvent) => {
     setLoading(false)
   }
 
-  const handleVerify = async () => {
-    setError(null)
-    setSuccess(null)
+  const handleVerifyOTP = async (e:React.FormEvent) => {
+    e.preventDefault()
 
-    if (!signUp) {
-      console.error("signUp is undefined. Clerk may not be initialized properly.")
-      setError("Verification is not available. Please try again later.")
-      return
-    }
-
-    if (!verificationCode) {
-      setError("Please enter the verification code")
-      return
-    }
-
-    try {
-      await signUp.attemptEmailAddressVerification({ code: verificationCode })
-
-      setSuccess("User successfully verified and created!")
-      setFormData({ firstName: "", lastName: "", email: "", password: "", confirmPassword: "", role: "User" })
-      setShowOTPField(false) // Hide verification step
-    } catch (err: any) {
-      console.error("Error verifying user:", err)
-
-      let errorMessage = "Verification failed"
-      if (err.errors && err.errors.length > 0) {
-        errorMessage = err.errors.map((e: any) => `${e.code}: ${e.message}`).join(", ")
-      } else if (err.message) {
-        errorMessage = err.message
-      }
-
-      setError(errorMessage)
-    }
-  }
-
-  const handleVerifyOTP = async () => {
     if (!signUp || !verificationCode) {
       setError("Invalid verification code.")
       return
@@ -134,8 +102,13 @@ const handleSubmit = async (e: React.FormEvent) => {
     setError(null)
 
     try {
-      await signUp.attemptEmailAddressVerification({ code: verificationCode })
-      setSuccess("Email verified successfully! You can now log in.")
+      const signUpAttempt = await signUp.attemptEmailAddressVerification({ code: verificationCode })
+      
+      if (signUpAttempt.status === 'complete') {
+        setSuccess("Email verified successfully! You can now log in.")
+        await setActive({session: signUpAttempt.createdSessionId})
+        // router.push('/')
+      }
     } catch (err: any) {
       setError("Incorrect verification code.")
     }

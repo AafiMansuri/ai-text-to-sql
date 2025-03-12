@@ -6,6 +6,7 @@ import { UserMenu } from "./user-menu"
 import DatabaseSelector from "./database-selector"
 import { Button } from "@/components/ui/button"
 import { ShieldUser  } from "lucide-react" // Admin Icon (Can be changed)
+import { UserButton } from "@clerk/nextjs"
 
 export const Navbar = () => {
 
@@ -25,7 +26,7 @@ export const Navbar = () => {
             </div>
     
             <div className="flex-1 flex justify-center">
-              <h1 className="text-2xl font-bold">ChatQL</h1>
+              <h1 className="text-2xl font-bold">AskDB</h1>
             </div>
     
             <div className="flex-1 flex items-center justify-end gap-2">
@@ -37,7 +38,7 @@ export const Navbar = () => {
               </Link>
             )}
               <ThemeToggle />
-              <UserMenu />
+              <UserButton />
             </div>
           </div>
         </header>

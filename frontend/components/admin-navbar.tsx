@@ -7,7 +7,7 @@ const AdminNavbar = () => {
     <header className="border-b sticky top-0 z-10 bg-background">
       <div className="flex items-center justify-between h-16 px-6">
         {/* Left Side - Title */}
-        <h1 className="text-xl font-bold tracking-tight">ChatQL</h1>
+        <h1 className="text-xl font-bold tracking-tight">AskDB</h1>
 
         {/* Center - Navigation */}
         <nav>
