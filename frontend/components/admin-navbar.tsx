@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import ThemeToggle from "./theme-toggle"
+import { UserButton } from "@clerk/nextjs"
 
 const AdminNavbar = () => {
   return (
@@ -23,8 +24,8 @@ const AdminNavbar = () => {
               </Link>
             </li>
             <li>
-              <Link href="/admin/create-user">
-                <Button variant="ghost">Create User</Button>
+              <Link href="/admin/add-user">
+                <Button variant="ghost">Add User</Button>
               </Link>
             </li>
           </ul>
@@ -33,7 +34,7 @@ const AdminNavbar = () => {
         {/* Right Side - Theme Toggle & Logout */}
         <div className="flex items-center space-x-4">
           <ThemeToggle />
-          <Button variant="outline">Logout</Button>
+          <UserButton />
         </div>
       </div>
     </header>

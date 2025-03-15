@@ -5,3 +5,4 @@ uvicorn
 ollama
 python-dotenv
 psycopg2
+requests

@@ -1,6 +1,7 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+import { clerkMiddleware, createRouteMatcher, clerkClient } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server';
-import { use } from 'react';
+
+
 
 const isPublicRoute = createRouteMatcher([
   "/login"
@@ -12,12 +13,24 @@ const isProtectedRoute = createRouteMatcher([
 ])
 
 export default clerkMiddleware(async(auth,req) => {
+  
   const {userId} = await auth();
   const currentUrl = new URL(req.url)
 
+
+  // Restricts auth users to /login
   if(userId && currentUrl.pathname === "/login") {
     return NextResponse.redirect(new URL("/chat",req.url))
-  } 
+  }
+
+  // Restricts non-admin users to /admin(*) routes
+  if(userId && currentUrl.pathname.startsWith('/admin')) {
+    const user = (await clerkClient()).users.getUser(userId)
+    const role = (await user).publicMetadata.role
+    if (role !== "Admin" && role !== "SuperAdmin" ){
+      return NextResponse.redirect(new URL("/chat", req.url));
+    }
+  }
   
   if(isProtectedRoute(req)) {
     await auth.protect()

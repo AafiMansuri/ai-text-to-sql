@@ -7,6 +7,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Eye, EyeOff } from "lucide-react"
 
 const LoginForm = () => {
 
@@ -15,8 +16,11 @@ const LoginForm = () => {
   const { isLoaded, signIn, setActive } = useSignIn()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
+
+  const togglePasswordVisibility = () => {setShowPassword((prev) => !prev)}
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -71,17 +75,27 @@ const LoginForm = () => {
               </div>
               <div>
                 <Label htmlFor="password">Password</Label>
+                <div className="relative">
+
                 <Input
                   id="password"
                   name="password"
-                  type="password"
+                  type={showPassword ? "text":"password"}
                   autoComplete="current-password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="mt-1"
                   placeholder="••••••••"
-                />
+                  />
+                  <Button
+                    type="button"
+                    className="absolute inset-y-0 right-0.5 flex items-center rounded-3xl bg-transparent hover:bg-transparent hover:cursor-pointer"
+                    onClick={togglePasswordVisibility}
+                  >
+                  {showPassword ? <EyeOff className="w-5 h-5 text-primary" /> : <Eye className="w-5 h-5 text-primary" />}
+                  </Button>
+                  </div>
               </div>
             </div>
 
