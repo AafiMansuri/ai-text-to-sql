@@ -6,3 +6,6 @@ ollama
 python-dotenv
 psycopg2
 requests
+pydantic-settings
+sqlmodel
+asyncpg

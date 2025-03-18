@@ -1,13 +1,13 @@
 import sqlalchemy as sa
 import pandas as pd
-from config import DB_URL_USER, DB_URL_ADMIN
+from src.config import Config as c
 
 def get_engine(role):
     """Returns the database engine based on user role."""
     if role == "admin" or role == "superadmin":
-        return sa.create_engine(DB_URL_ADMIN)
+        return sa.create_engine(c.DB_URL_ADMIN)
     else:
-        return sa.create_engine(DB_URL_USER)
+        return sa.create_engine(c.DB_URL_USER)
 
 
 def execute_query(query,role="user"):

@@ -90,7 +90,7 @@ const ForgotPassword = () => {
         )}
 
         <form className="mt-6 space-y-4" onSubmit={!successfulCreation ? sendResetCode : resetPassword}>
-          {!successfulCreation ? (
+          {! successfulCreation ? (
             <>
               <div>
                 <Label htmlFor="email" className="pb-3">Email Address</Label>
