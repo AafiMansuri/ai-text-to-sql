@@ -1,9 +1,8 @@
 from datetime import datetime
 from pydantic import BaseModel, EmailStr
-import uuid
 
 class User(BaseModel):
-    uid:uuid.UUID
+    uid:str
     email: EmailStr
     first_name: str
     last_name: str
@@ -11,7 +10,14 @@ class User(BaseModel):
     created_at: datetime
     updated_at: datetime
 
+class UserInviteModel(BaseModel):
+    email: EmailStr
+    first_name: str
+    last_name: str
+    role:str
+
 class UserCreateModel(BaseModel):
+    uid:str
     email: EmailStr
     first_name: str
     last_name: str

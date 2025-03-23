@@ -2,7 +2,7 @@ import requests
 from fastapi import APIRouter, status, Depends
 from fastapi.exceptions import HTTPException
 from sqlmodel.ext.asyncio.session import AsyncSession
-from src.schemas import User,UserCreateModel, UserUpdateModel
+from src.schemas import User,UserCreateModel, UserInviteModel, UserUpdateModel
 from src.config import Config as c
 from src.db.main import get_session
 from src.service import UserService
@@ -52,11 +52,11 @@ async def delete_user(user_uid:str, session:AsyncSession = Depends(get_session))
 
 
 @router.post("/invite")
-def invite_user(user: User):
+def invite_user(user: UserInviteModel):
     headers = {
         "Authorization": f"Bearer {c.CLERK_SECRET_KEY}",
         "Content-Type": "application/json"
-    }
+    }   
     payload = {
         "email_address": user.email,
 
@@ -65,7 +65,7 @@ def invite_user(user: User):
             "last_name": user.last_name,
             "role": user.role
         },
-        "redirct_url": "http://localhost:3000",
+        "redirct_url": "https://charming-flounder-seriously.ngrok-free.app/chat",
         "expires_in_days": 1,
     }
 

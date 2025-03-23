@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   AlertDialog,
@@ -15,27 +16,106 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 
-// Mock data for users
-const mockUsers = [
-  { id: 1, firstName: "John", lastName: "Doe", email: "john@example.com", role: "User" },
-  { id: 2, firstName: "Jane", lastName: "Smith", email: "jane@example.com", role: "Admin" },
-  { id: 3, firstName: "Bob", lastName: "Johnson", email: "bob@example.com", role: "User" },
-]
+interface User {
+  uid: string
+  email: string
+  first_name: string
+  last_name: string
+  role: string
+  created_at: string
+  updated_at: string
+}
 
 const Admin = () => {
-  const [users, setUsers] = useState(mockUsers)
+  const [users, setUsers] = useState<User[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const fetchUsers = async () => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users`)
+      if (!res.ok) throw new Error("Failed to fetch users")
 
-  const handleRoleChange = (userId: number, newRole: string) => {
-    setUsers(users.map((user) => (user.id === userId ? { ...user, role: newRole } : user)))
+      const data = await res.json()
+      setUsers(data)
+      console.log(data)
+    } catch (err:any) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const handleDeleteUser = (userId: number) => {
-    setUsers(users.filter((user) => user.id !== userId))
+  useEffect(() => {
+    fetchUsers()
+  }, [])
+
+  const handleRoleChange = async (user_uid: string, newRole: string) => {
+
+    try {
+      const user = users.find((user) => user.uid === user_uid);
+      if (!user) return;
+
+      const updatedUserData = {
+        email: user.email,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        role: newRole, 
+    };
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/${user_uid}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatedUserData),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to update user role");
+    }
+
+    setUsers((prevUsers) =>
+      prevUsers.map((u) => (u.uid === user_uid ? { ...u, role: newRole } : u))
+    );
+    
+    console.log("User role updated successfully");
+
+    } catch (error) {
+      console.error("Error updating user role:", error);
+    }
+  }
+
+  const handleDeleteUser = async (user_uid: string) => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/${user_uid}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      setUsers((prevUsers) =>
+        prevUsers.filter((u) => u.uid !== user_uid));
+
+      if (!response.ok) {
+        throw new Error("Failed to delete user");
+      }
+
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    }
   }
 
   return (
     <main className="container mx-auto px-4 py-8">
-      <h2 className="text-2xl font-bold mb-4">User Management</h2>
+        <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold">User Management</h2>
+        
+        {/* Refresh Button */}
+        <Button onClick={fetchUsers} disabled={loading} variant="outline">  
+          <RefreshCw className={`w-5 h-5 ${loading ? "animate-spin" : ""}`} />
+        </Button>
+      </div>
       <Table>
         <TableHeader>
           <TableRow>
@@ -48,9 +128,9 @@ const Admin = () => {
         </TableHeader>
         <TableBody>
           {users.map((user) => (
-            <TableRow key={user.id}>
-              <TableCell>{user.firstName}</TableCell>
-              <TableCell>{user.lastName}</TableCell>
+            <TableRow key={user.uid}>
+              <TableCell>{user.first_name}</TableCell>
+              <TableCell>{user.last_name}</TableCell>
               <TableCell>{user.email}</TableCell>
               <TableCell>{user.role}</TableCell>
               <TableCell>
@@ -65,12 +145,12 @@ const Admin = () => {
                         <AlertDialogHeader>
                           <AlertDialogTitle>Confirm Role Change</AlertDialogTitle>
                           <AlertDialogDescription>
-                            Are you sure you want to make <b>{user.firstName}</b> an Admin? This action cannot be undone.
+                            Are you sure you want to make <b>{user.first_name}</b> an Admin? This action cannot be undone.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleRoleChange(user.id, "Admin")}>
+                          <AlertDialogAction onClick={() => handleRoleChange(user.uid, "Admin")}>
                             Confirm
                           </AlertDialogAction>
                         </AlertDialogFooter>
@@ -93,7 +173,7 @@ const Admin = () => {
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDeleteUser(user.id)}>Delete</AlertDialogAction>
+                          <AlertDialogAction onClick={() => handleDeleteUser(user.uid )}>Delete</AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>
