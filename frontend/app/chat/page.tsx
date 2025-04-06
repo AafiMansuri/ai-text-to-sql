@@ -1,122 +1,156 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Send, Circle, Database, Sparkles } from "lucide-react"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { useState, useEffect } from "react"
+import { useUser } from "@clerk/nextjs"
+import { Navbar } from "@/components/navbar"
+import ChatInterface from "@/components/chat-interface"
 import ChatSidebar from "@/components/chat-sidebar"
 
-
-// Mock function to simulate AI response
-const getAIResponse = async (message: string): Promise<string> => {
-  // Simulate API call delay
-  await new Promise((resolve) => setTimeout(resolve, 2000))
-  return `Here's a SQL query for "${message}": SELECT * FROM table WHERE condition;`
+interface Message {
+  id: string;
+  chat_id: string;
+  content: string;
+  role: 'user' | 'assistant';
+  created_at: string;
 }
 
+interface Chat {
+  id: string;
+  title: string;
+  user_id: string;
+  created_at: string;
+}
 
-const ChatInterface = () => {
-
-  const [messages, setMessages] = useState<Array<{ type: "user" | "ai"; content: string }>>([])
-  const [inputMessage, setInputMessage] = useState("")
+export default function ChatPage() {
+  const { user } = useUser()
+  const [chats, setChats] = useState<Chat[]>([])
+  const [messages, setMessages] = useState<Message[]>([])
+  const [currentChatId, setCurrentChatId] = useState<string | null>(null)
+  const [selectedView, setSelectedView] = useState<string>("")
   const [isLoading, setIsLoading] = useState(false)
-  const [sidebarOpen, setSidebarOpen] = useState(true)
-  const chatEndRef = useRef<HTMLDivElement>(null)
+  const [isCollapsed, setIsCollapsed] = useState(false)
 
-  const handleSendMessage = async () => {
-    if (inputMessage.trim() === "") return
+  useEffect(() => {
+    if (user?.id) {
+      loadChats()
+    }
+  }, [user?.id])
 
-    setMessages((prev) => [...prev, { type: "user", content: inputMessage }])
-    setInputMessage("")
-    setIsLoading(true)
-
+  const loadChats = async () => {
     try {
-      const aiResponse = await getAIResponse(inputMessage)
-      setMessages((prev) => [...prev, { type: "ai", content: aiResponse }])
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/chats?user_id=${user!.id}`)
+      if (!response.ok) throw new Error('Failed to fetch chats')
+      const data = await response.json()
+      setChats(data)
     } catch (error) {
-      console.error("Error getting AI response:", error)
-      setMessages((prev) => [...prev, { type: "ai", content: "Sorry, I couldn't process your request." }])
+      console.error("Error loading chats:", error)
+    }
+  }
+
+  const loadChat = async (chatId: string) => {
+    try {
+      setIsLoading(true)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/chats/${chatId}`)
+      if (!response.ok) throw new Error('Failed to fetch chat')
+      const data = await response.json()
+      setMessages(data.messages)
+      setCurrentChatId(chatId)
+      if (!selectedView) {
+        setSelectedView("students_view")
+      }
+    } catch (error) {
+      console.error("Error loading chat:", error)
     } finally {
       setIsLoading(false)
     }
   }
 
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [messages])
+  const handleNewChat = async () => {
+    if (!user?.id) return
+
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/chats`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: "New Chat",
+          user_id: user.id
+        })
+      })
+      if (!response.ok) throw new Error('Failed to create chat')
+      const newChat = await response.json()
+      setChats(prev => [newChat, ...prev])
+      setCurrentChatId(newChat.id)
+      setMessages([])
+    } catch (error) {
+      console.error("Error creating new chat:", error)
+    }
+  }
+
+  const handleSendMessage = async (message: string) => {
+    if (!message.trim() || !currentChatId || !user?.id) return
+
+    try {
+      setIsLoading(true)
+      // Add user message immediately
+      const userMessage: Message = {
+        id: Date.now().toString(),
+        chat_id: currentChatId,
+        content: message,
+        role: 'user',
+        created_at: new Date().toISOString()
+      }
+      setMessages(prev => [...prev, userMessage])
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/chats/${currentChatId}/query`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: message,
+          view_name: selectedView
+        })
+      })
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.detail || 'Failed to process query')
+      }
+      
+      const data = await response.json()
+      setMessages(prev => [...prev, data])
+    } catch (error) {
+      console.error("Error processing query:", error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   return (
-<div className="flex flex-1 relative">
-
-        <ChatSidebar onToggle={setSidebarOpen} />
-
-        <div
-          className={`flex-1 flex flex-col h-[calc(100vh-4rem)] transition-all duration-300 ${sidebarOpen ? "ml-64" : "ml-12"}`}
-        >
-          <ScrollArea className="flex-1 p-4">
-            <div className="max-w-3xl mx-auto">
-
-              {/* Welcome header */}
-              {messages.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-16 text-center">
-                  <div className="bg-primary/10 p-3 rounded-full mb-4">
-                    <Database className="h-10 w-10 text-primary" />
-                  </div>
-                  <h1 className="text-3xl font-bold tracking-tight mb-2">Welcome to AskDB</h1>
-                  <p className="text-lg text-muted-foreground max-w-md mb-6">
-                    Talk to Your Data. Get Answers Instantly.
-                  </p>
-                  <div className="flex items-center justify-center text-sm text-muted-foreground">
-                    <Sparkles className="h-4 w-4 mr-2" />
-                    <span>Ask me anything about your database</span>
-                  </div>
-                </div>
-              )}
-
-              {/* Chat messages */}
-              {messages.map((message, index) => (
-                <div key={index} className={`mb-4 ${message.type === "user" ? "text-right" : "text-left"}`}>
-                  <div
-                    className={`inline-block p-3 rounded-lg max-w-[80%] ${
-                      message.type === "user" ? "bg-primary text-primary-foreground" : "bg-secondary"
-                    }`}
-                  >
-                    {message.content}
-                  </div>
-                </div>
-              ))}
-              {isLoading && (
-                <div className="text-left mb-4">
-                  <div className="inline-flex items-center space-x-1 p-3 rounded-lg bg-secondary">
-                    <Circle className="h-2 w-2 animate-bounce" />
-                    <Circle className="h-2 w-2 animate-bounce delay-150" />
-                    <Circle className="h-2 w-2 animate-bounce delay-300" />
-                  </div>
-                </div>
-              )}
-              <div ref={chatEndRef} />
-            </div>
-          </ScrollArea>
-
-          {/* Input area - fixed at bottom */}
-          <div className=" p-4 bg-background">
-            <div className="max-w-3xl mx-auto flex items-center gap-2 bg-background border rounded-lg p-2">
-              <Input
-                placeholder="Describe the data you want to query..."
-                value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
-                onKeyUp={(e) => e.key === "Enter" && handleSendMessage()}
-                className="flex-1 border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-              />
-              <Button size="icon" className="rounded-full" onClick={handleSendMessage}>
-                <Send className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
+    <div className="flex flex-col h-screen">
+      <Navbar />
+      <div className="flex-1 flex overflow-hidden">
+        <ChatSidebar
+          chats={chats}
+          currentChatId={currentChatId}
+          onChatSelect={loadChat}
+          onNewChat={handleNewChat}
+          onViewChange={setSelectedView}
+          isCollapsed={isCollapsed}
+          onToggleCollapse={setIsCollapsed}
+        />
+        <ChatInterface
+          messages={messages}
+          isLoading={isLoading}
+          currentChatId={currentChatId}
+          selectedView={selectedView}
+          onSendMessage={handleSendMessage}
+          isCollapsed={isCollapsed}
+        />
       </div>
+    </div>
   )
 }
-
-export default ChatInterface

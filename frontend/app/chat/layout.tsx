@@ -1,5 +1,4 @@
 import { ThemeProvider } from '@/components/theme-provider'
-import { Navbar } from "@/components/navbar";
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -17,7 +16,6 @@ export default function Layout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <div className="min-h-screen bg-background text-foreground flex flex-col">
             
-            <Navbar />
             {children}
           </div>
         </ThemeProvider>

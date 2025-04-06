@@ -2,7 +2,6 @@ import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import "@/app/globals.css";
 import { ThemeProvider } from '@/components/theme-provider'
-import { Navbar } from "@/components/navbar";
 
 
 export const metadata: Metadata = {

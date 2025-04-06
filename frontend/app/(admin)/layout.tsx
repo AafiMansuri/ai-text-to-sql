@@ -1,5 +1,5 @@
 import { ThemeProvider } from '@/components/theme-provider'
-import AdminNavbar from "@/components/admin-navbar";
+import { Navbar } from '@/components/navbar';
 import { ClerkProvider } from "@clerk/nextjs"
 import { Metadata } from 'next';
 
@@ -18,7 +18,7 @@ export default function RootLayout({
     <ClerkProvider>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <div className="min-h-screen bg-background text-foreground flex flex-col">
-            <AdminNavbar/>
+            <Navbar/>
             {children}
           </div>
         </ThemeProvider>

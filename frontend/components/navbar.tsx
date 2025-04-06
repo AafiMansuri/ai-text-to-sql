@@ -1,44 +1,56 @@
 "use client"
 import Link from "next/link"
-import{ useState, useEffect } from "react"
+import { useState, useEffect } from "react"
 import ThemeToggle from "./theme-toggle"
-import DatabaseSelector from "./database-selector"
 import { Button } from "@/components/ui/button"
-import { ShieldUser  } from "lucide-react" // Admin Icon (Can be changed)
+import { ShieldUser } from "lucide-react"
 import { UserButton } from "@clerk/nextjs"
-import { useUser } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs"
 
-export const Navbar = () => {
+interface NavbarProps {
+  onViewChange?: (view: string) => void;
+}
 
+export const Navbar = ({ onViewChange }: NavbarProps) => {
   const [role, setRole] = useState<string | null>(null)
-
   const { user } = useUser()
-
   const userRole = user?.publicMetadata?.role
 
-    return (
-        <header className="border-b sticky top-0 z-10 bg-background ">
-          <div className="w-full mx-auto flex items-center h-16 px-4">
-            <div className="flex-1">
-              <DatabaseSelector />
-            </div>
-    
-            <div className="flex-1 flex justify-center">
-              <h1 className="text-2xl font-bold">AskDB</h1>
-            </div>
-    
-            <div className="flex-1 flex items-center justify-end gap-2">
-              {userRole === "Admin" || userRole ==="Superadmin" ?(
-              <Link href="/admin">
-                <Button variant="ghost" size="icon" className="hover:bg-gray-200 dark:hover:bg-gray-700">
-                  <ShieldUser className="h-5 w-5 text-gray-700 dark:text-gray-300" />
-                </Button>
+  return (
+    <header className="border-b sticky top-0 z-10 bg-background">
+    <div className="flex items-center justify-between h-16 px-6">
+      {/* Left Side - Title */}
+      <h1 className="text-xl font-bold tracking-tight">AskDB</h1>
+
+      {/* Center - Navigation */}
+      {(userRole === "Admin" || userRole === "Super Admin") && (
+        <nav>
+          <ul className="flex items-center space-x-6">
+            <li>  
+              <Link href="/chat">
+                <Button variant="ghost">Chat</Button>
               </Link>
-            ):null}
-              <ThemeToggle />
-              <UserButton />
-            </div>
-          </div>
-        </header>
-      )
+            </li>
+            <li>
+              <Link href="/admin">
+                <Button variant="ghost">Manage Users</Button>
+              </Link>
+            </li>
+            <li>
+              <Link href="/admin/add-user">
+                <Button variant="ghost">Add User</Button>
+              </Link>
+            </li>
+          </ul>
+        </nav>
+      )}
+
+      {/* Right Side - Theme Toggle & Logout */}
+      <div className="flex items-center space-x-4">
+        <ThemeToggle />
+        <UserButton />
+      </div>
+    </div>
+  </header>
+  )
 }

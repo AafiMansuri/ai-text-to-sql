@@ -2,7 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from src.db.main import init_db
-from src.api.user import router as user_router
+from src.api.endpoints.user import router as user_router
+from src.api.endpoints.chat import router as chat_router
 
 
 @asynccontextmanager
@@ -33,7 +34,7 @@ app.add_middleware(
 
 
 app.include_router(user_router, prefix="/users", tags=["users"])
-
+app.include_router(chat_router, prefix="/chats", tags=["chats"])
 @app.get("/")
 def root():
     return {"message": "FastAPI server is running"}

@@ -59,7 +59,8 @@ const Admin = () => {
         email: user.email,
         first_name: user.first_name,
         last_name: user.last_name,
-        role: newRole, 
+        role: newRole,
+        updated_at: new Date().toISOString(),
     };
 
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/${user_uid}`, {
@@ -109,9 +110,8 @@ const Admin = () => {
   return (
     <main className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">User Management</h2>
+        <h2 className="text-2xl font-bold">Manage Users</h2>
         
-        {/* Refresh Button */}
         <Button onClick={fetchUsers} disabled={loading} variant="outline">  
           <RefreshCw className={`w-5 h-5 ${loading ? "animate-spin" : ""}`} />
         </Button>
