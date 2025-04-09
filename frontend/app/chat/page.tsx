@@ -6,10 +6,16 @@ import { Navbar } from "@/components/navbar"
 import ChatInterface from "@/components/chat-interface"
 import ChatSidebar from "@/components/chat-sidebar"
 
+type QueryResult = {
+  columns: string[]
+  rows: Record<string, string | number | null>[]
+}
+
 interface Message {
   id: string;
   chat_id: string;
   content: string;
+  query_result?: QueryResult;
   role: 'user' | 'assistant';
   created_at: string;
 }
@@ -94,7 +100,7 @@ export default function ChatPage() {
 
     try {
       setIsLoading(true)
-      // Add user message immediately
+
       const userMessage: Message = {
         id: Date.now().toString(),
         chat_id: currentChatId,
@@ -121,7 +127,20 @@ export default function ChatPage() {
       }
       
       const data = await response.json()
-      setMessages(prev => [...prev, data])
+      console.log("Assistant response from API:", data);
+
+      const assistantMessage: Message = {
+        id: Date.now().toString(),
+        chat_id: currentChatId,
+        content: data.message ?? `Here are the results based on your question.\n\nThe following SQL query was executed:\n\n\`${data.sql_query}\``,
+        query_result: data.query_result ?? undefined,
+        role: "assistant",
+        created_at: new Date().toISOString()
+      }
+      console.log("Assistant message:", assistantMessage);
+      
+      setMessages(prev => [...prev, assistantMessage])
+
     } catch (error) {
       console.error("Error processing query:", error)
     } finally {

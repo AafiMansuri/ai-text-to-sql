@@ -73,6 +73,6 @@ class QueryRequest(BaseModel):
     view_name: str  # This will be used to fetch the correct DDL from ddl_statements.json
 
 class QueryResponse(BaseModel):
-    sql_query: str
-    query_result: dict
+    sql_query: Optional[str] = None
+    query_result: Optional[dict] = None
     message: str

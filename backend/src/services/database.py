@@ -14,24 +14,32 @@ logger = logging.getLogger(__name__)
 def get_engine(role="user"):
     """Returns the database engine based on user role."""
 
+    print("Connecting using the following URL:")
     if role == "admin" or role == "superadmin":
-        return create_async_engine(c.NEON_DB_URL_ADMIN)
+        print("Connecting using the following URL:",c.DB_URL_ADMIN)
+        return create_async_engine(c.DB_URL_ADMIN)
+        
     else:
-        return create_async_engine(c.NEON_DB_URL)
+        print("Connecting using the following URL:",c.DB_URL_USER)
+        return create_async_engine(c.DB_URL_USER)
 
-async def execute_query(sql_query: str, db: AsyncSession, role: str = "user") -> Dict[str, Any]:
+async def execute_query(sql_query: str, role: str = "user") -> Dict[str, Any]:
     """Execute a SQL query and return the results as a dictionary."""
     try:
         print(f"Executing query with role {role}: {sql_query}")
         
+        engine = get_engine(role)
+        async_session = AsyncSession(engine, expire_on_commit=False)
+
         # Execute the query
-        try:
-            result = await db.execute(text(sql_query))
-            rows = result.fetchall()
-            print(f"Query executed successfully, returned {len(rows)} rows")
-        except Exception as e:
-            print(f"Error executing query: {str(e)}")
-            raise
+        async with async_session as session:
+            try:
+                result = await session.execute(text(sql_query))
+                rows = result.fetchall()
+                print(f"Query executed successfully, returned {len(rows)} rows")
+            except Exception as e:
+                print(f"Error executing query: {str(e)}")
+                raise
         
         # Convert to dictionary format
         if rows:
