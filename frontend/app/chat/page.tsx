@@ -25,6 +25,8 @@ interface Chat {
   title: string;
   user_id: string;
   created_at: string;
+  updated_at: string;
+  messages: Message[]
 }
 
 export default function ChatPage() {
