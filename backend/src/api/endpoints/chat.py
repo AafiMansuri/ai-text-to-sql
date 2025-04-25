@@ -62,7 +62,21 @@ async def create_chat(chat: ChatCreate, db: AsyncSession = Depends(get_session))
         db.add(db_chat)
         await db.commit()
         await db.refresh(db_chat)
-        return db_chat
+
+
+        result = await db.exec(
+            select(Chat)
+            .options(selectinload(Chat.messages))
+            .where(Chat.id == db_chat.id)
+        )
+        chat_with_messages = result.one()
+
+
+        print((f"Created chat: {chat_with_messages}"))
+
+        return chat_with_messages
+    
+
     except Exception as e:
         logger.error(f"Error creating chat: {str(e)}")
         raise HTTPException(
@@ -127,7 +141,7 @@ async def process_query(chat_id: UUID, query_request: QueryRequest, db: AsyncSes
                 assistant_message = Message(
                     chat_id=chat_id,
                     role="assistant",
-                    content=f"Here is the SQL query: {sql_query}",
+                    content=f"",
                     sql_query=sql_query,
                     query_result=query_result
                 )
@@ -139,7 +153,7 @@ async def process_query(chat_id: UUID, query_request: QueryRequest, db: AsyncSes
                 return QueryResponse(
                     sql_query=sql_query,
                     query_result=query_result,
-                    message=f"Here are the results based on your question.\n\nThe following SQL query was executed:\n\n`{sql_query}`"
+                    message=f""
                 )
 
             except Exception as e:

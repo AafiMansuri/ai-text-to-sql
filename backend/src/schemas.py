@@ -76,3 +76,16 @@ class QueryResponse(BaseModel):
     sql_query: Optional[str] = None
     query_result: Optional[dict] = None
     message: str
+
+# View Schema for Database Selector
+
+class ViewSchema(BaseModel):
+    friendly_name: str
+    view_name: str
+    ddl: str
+
+
+class AddViewRequest(BaseModel):
+    view_key: str  # user-friendly key used in dropdown and file
+    view_name: str  # actual DB view name
+    ddl: str     # the DDL statement

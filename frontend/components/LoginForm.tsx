@@ -7,13 +7,14 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Eye, EyeOff } from "lucide-react"
+import { Eye, EyeOff, Factory } from "lucide-react"
 
 const LoginForm = () => {
 
 
 
   const { isLoaded, signIn, setActive } = useSignIn()
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
@@ -27,6 +28,7 @@ const LoginForm = () => {
     if (!isLoaded) return;
   
     setError(null)
+    setIsSubmitting(true)
   
     try {
       const signInAttempt  = await signIn.create({
@@ -44,6 +46,9 @@ const LoginForm = () => {
     } catch (err: any) {
       console.error(JSON.stringify(err, null, 2))
       setError(err.errors?.[0]?.message || "Failed to sign in")
+    }
+    finally {
+      setIsSubmitting(false)
     }
   }
   
@@ -110,9 +115,9 @@ const LoginForm = () => {
             </div>
     
             <div>
-              <Button type="submit" className="w-full">
-                Sign in
-              </Button>
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? "Signing in..." : "Sign in"}
+            </Button>
             </div>
           </form>
         </div>
