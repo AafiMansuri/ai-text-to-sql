@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { MessageSquare, PanelLeftClose, PanelLeftOpen, Plus, Database } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -24,6 +24,7 @@ interface ChatSidebarProps {
   onViewChange?: (view: string) => void
   isCollapsed: boolean
   onToggleCollapse: (collapsed: boolean) => void
+  views: string[]
 }
 
 const ChatSidebar = ({ 
@@ -33,8 +34,21 @@ const ChatSidebar = ({
   onNewChat, 
   onViewChange,
   isCollapsed,
-  onToggleCollapse 
+  onToggleCollapse,
+  views 
 }: ChatSidebarProps) => {
+  const [selectedDatabase, setSelectedDatabase] = useState("StudentDB")
+  const { user } = useUser()
+  const userRole = user?.publicMetadata?.role as string || "User"
+
+  // Handle database change
+  const handleDatabaseChange = (newDatabase: string) => {
+    setSelectedDatabase(newDatabase);
+    if (onViewChange) {
+      onViewChange(newDatabase);
+    }
+  };
+  
   return (
     <>
       {/* Mobile overlay */}
@@ -168,7 +182,11 @@ const ChatSidebar = ({
               <Database className="h-4 w-4" />
             </Button>
           ) : (
-            <DatabaseSelector onChange={onViewChange} />
+            <DatabaseSelector 
+              views={views} 
+              onChange={onViewChange} 
+              userRole={userRole}
+            />
           )}
         </div>
       </div>

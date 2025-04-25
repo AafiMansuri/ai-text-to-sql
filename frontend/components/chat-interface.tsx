@@ -66,8 +66,11 @@ const ChatInterface = ({
                     <Database className="h-10 w-10 text-primary" />
                   </div>
                   <h1 className="text-3xl font-bold tracking-tight mb-2">Welcome to AskDB</h1>
-                  <p className="text-lg text-muted-foreground max-w-md mb-6">
+                  <p className="text-lg text-muted-foreground max-w-md mb-2">
                     Talk to Your Data. Get Answers Instantly.
+                  </p>
+                  <p className="text-lg text-muted-foreground max-w-md mb-6">
+                    Please Click on "New Chat" to start a conversation.
                   </p>
                   <div className="flex items-center justify-center text-sm text-muted-foreground">
                     <Sparkles className="h-4 w-4 mr-2" />

@@ -37,12 +37,26 @@ export default function ChatPage() {
   const [selectedView, setSelectedView] = useState<string>("")
   const [isLoading, setIsLoading] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false)
+  const [views, setViews] = useState<string[]>([]) // Store views here
 
   useEffect(() => {
     if (user?.id) {
       loadChats()
     }
+    loadViews()
   }, [user?.id])
+
+  const loadViews = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/database/views`)
+      if (!response.ok) throw new Error('Failed to fetch views')
+      const data = await response.json()
+      const viewNames = data.map((view: { friendly_name: string }) => view.friendly_name) // Get only the friendly names
+      setViews(viewNames)
+    } catch (error) {
+      console.error("Error loading views:", error)
+    }
+  }
 
   const loadChats = async () => {
     try {
@@ -162,6 +176,7 @@ export default function ChatPage() {
           onViewChange={setSelectedView}
           isCollapsed={isCollapsed}
           onToggleCollapse={setIsCollapsed}
+          views={views}
         />
         <ChatInterface
           messages={messages}
