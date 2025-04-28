@@ -36,11 +36,6 @@ export const Navbar = ({ onViewChange }: NavbarProps) => {
                 <Button variant="ghost">Manage Users</Button>
               </Link>
             </li>
-            <li>
-              <Link href="/admin/add-user">
-                <Button variant="ghost">Add User</Button>
-              </Link>
-            </li>
           </ul>
         </nav>
       )}

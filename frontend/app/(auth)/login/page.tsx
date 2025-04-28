@@ -19,7 +19,7 @@ const Login = () => {
         {/* Right side */}
         <div className="w-full md:w-1/2 bg-gray-100 dark:bg-zinc-950 flex flex-col items-center justify-center p-8">
           <h1 className="text-4xl md:text-6xl font-bold text-center text-primary mb-8 leading-tight">
-          AskDB
+          AI-based Text-to-SQL Generator
           </h1>
           <div className="flex items-center justify-center text-xl text-muted-foreground">
                     <Sparkles className="h-4 w-4 mr-2" />
