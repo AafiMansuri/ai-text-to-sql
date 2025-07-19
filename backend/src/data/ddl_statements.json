@@ -1,6 +1,12 @@
 {
   "StudentDB": {
     "view_name": "students_view",
-    "schema": "CREATE OR REPLACE VIEW students_view AS SELECT s.student_id, s.first_name, s.last_name, s.date_of_birth, s.gender, s.email, s.phone, s.address, s.enrollment_date AS student_enrollment_date, e.enrollment_id, e.enrollment_date AS enrollment_date, e.grade, c.course_id, c.course_name, c.course_code, c.credits, c.department, i.instructor_id, i.first_name AS instructor_first_name, i.last_name AS instructor_last_name, i.email AS instructor_email, i.phone AS instructor_phone, p.payment_id, p.amount, p.payment_date, p.payment_method FROM students s LEFT JOIN enrollments e ON s.student_id = e.student_id LEFT JOIN courses c ON e.course_id = c.course_id LEFT JOIN course_instructors ci ON c.course_id = ci.course_id LEFT JOIN instructors i ON ci.instructor_id = i.instructor_id LEFT JOIN payments p ON s.student_id = p.student_id;"
+    "schema": "CREATE OR REPLACE VIEW students_view AS SELECT s.student_id, s.first_name, s.last_name, s.date_of_birth, s.gender, s.email, s.phone, s.address, s.enrollment_date AS student_enrollment_date, e.enrollment_id, e.enrollment_date AS enrollment_date, e.grade, c.course_id, c.course_name, c.course_code, c.credits, c.department, i.instructor_id, i.first_name AS instructor_first_name, i.last_name AS instructor_last_name, i.email AS instructor_email, i.phone AS instructor_phone, p.payment_id, p.amount, p.payment_date, p.payment_method FROM students s LEFT JOIN enrollments e ON s.student_id = e.student_id LEFT JOIN courses c ON e.course_id = c.course_id LEFT JOIN course_instructors ci ON c.course_id = ci.course_id LEFT JOIN instructors i ON ci.instructor_id = i.instructor_id LEFT JOIN payments p ON s.student_id = p.student_id;",
+    "db_url": "postgresql+asyncpg://readonly_user:user%40123abc@localhost:5432/studentdb"
+  },
+  "CompanyDB": {
+    "view_name": "employee_department_view",
+    "schema": "CREATE VIEW employee_department_view AS\nSELECT \n    e.employee_id,\n    e.employee_name,\n    d.department_name,\n    e.salary,\n    e.hire_date\nFROM employees e\nJOIN departments d ON e.department_id = d.department_id;",
+    "db_url": "postgresql+asyncpg://postgres:admin@localhost:5432/company_db"
   }
 }

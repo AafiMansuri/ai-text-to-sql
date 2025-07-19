@@ -13,6 +13,7 @@ from src.db.main import get_session
 from src.services.query_generator import generate_sql
 from src.services.database import execute_query
 from src.data.ddl_statements import get_ddl_statement
+from src.data.ddl_statements import get_db_url
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -106,6 +107,13 @@ async def process_query(chat_id: UUID, query_request: QueryRequest, db: AsyncSes
             print(f"View not found: {query_request.view_name}")
             raise HTTPException(status_code=404, detail="View not found")
         print(f"Found DDL statement: {ddl_statement[:100]}...") 
+
+        # Get the database_name (assume view_name is used as database_name key)
+        database_name = query_request.view_name
+        db_url = get_db_url(database_name)
+        if not db_url:
+            print(f"Database not found or db_url missing for: {database_name}")
+            raise HTTPException(status_code=404, detail="Database not found or db_url missing")
         
         # Generate SQL query or detect conversational input
         try:
@@ -126,8 +134,8 @@ async def process_query(chat_id: UUID, query_request: QueryRequest, db: AsyncSes
                     print(f"User not found: {chat.user_id}")
                     raise HTTPException(status_code=404, detail="User not found")
 
-                print(f"Executing query with user role: {user.role}")
-                query_result = await execute_query(sql_query, user.role)
+                print(f"Executing query on database: {database_name}")
+                query_result = await execute_query(sql_query, database_name)
                 print(f"Query executed successfully")
 
                 # Store user message

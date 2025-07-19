@@ -8,27 +8,23 @@ from src.config import Config as c
 import asyncio
 from datetime import datetime, date, time
 import json
+from src.data.ddl_statements import get_db_url
 
 logger = logging.getLogger(__name__)
 
-def get_engine(role="user"):
-    """Returns the database engine based on user role."""
+def get_engine(database_name: str):
+    """Returns the database engine based on database_name from ddl_statements.json."""
+    db_url = get_db_url(database_name)
+    if not db_url:
+        raise ValueError(f"No db_url found for database: {database_name}")
+    print(f"Connecting using the following URL: {db_url}")
+    return create_async_engine(db_url)
 
-    print("Connecting using the following URL:")
-    if role == "admin" or role == "superadmin":
-        print("Connecting using the following URL:",c.DB_URL_ADMIN)
-        return create_async_engine(c.DB_URL_ADMIN)
-        
-    else:
-        print("Connecting using the following URL:",c.DB_URL_USER)
-        return create_async_engine(c.DB_URL_USER)
-
-async def execute_query(sql_query: str, role: str = "user") -> Dict[str, Any]:
+async def execute_query(sql_query: str, database_name: str) -> Dict[str, Any]:
     """Execute a SQL query and return the results as a dictionary."""
     try:
-        print(f"Executing query with role {role}: {sql_query}")
-        
-        engine = get_engine(role)
+        print(f"Executing query on database {database_name}: {sql_query}")
+        engine = get_engine(database_name)
         async_session = AsyncSession(engine, expire_on_commit=False)
 
         # Execute the query
@@ -40,7 +36,6 @@ async def execute_query(sql_query: str, role: str = "user") -> Dict[str, Any]:
             except Exception as e:
                 print(f"Error executing query: {str(e)}")
                 raise
-        
         # Convert to dictionary format
         if rows:
             columns = result.keys()
@@ -56,14 +51,12 @@ async def execute_query(sql_query: str, role: str = "user") -> Dict[str, Any]:
                     else:
                         row_dict[col] = str(val) if val is not None else None
                 serializable_rows.append(row_dict)
-            
             result_dict = {
                 "columns": list(columns),
                 "rows": serializable_rows
             }
             return result_dict
         return {"columns": [], "rows": []}
-            
     except Exception as e:
         print(f"Error executing query: {str(e)}")
         raise 

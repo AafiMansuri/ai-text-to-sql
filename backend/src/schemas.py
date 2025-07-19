@@ -83,9 +83,11 @@ class ViewSchema(BaseModel):
     friendly_name: str
     view_name: str
     ddl: str
+    db_url: str
 
 
 class AddViewRequest(BaseModel):
     view_key: str  # user-friendly key used in dropdown and file
     view_name: str  # actual DB view name
     ddl: str     # the DDL statement
+    db_url: str  # the database connection URL

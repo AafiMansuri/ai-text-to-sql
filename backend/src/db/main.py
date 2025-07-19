@@ -8,7 +8,7 @@ from sqlalchemy.orm import sessionmaker
 
 async_engine = AsyncEngine(
     create_engine(
-        url=c.NEON_DB_URL,
+        url=c.MAIN_DATABASE_URL,
         echo=True,
     )
 )

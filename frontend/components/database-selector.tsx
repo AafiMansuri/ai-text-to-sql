@@ -18,6 +18,7 @@ interface AddViewFormData {
   view_key: string;
   view_name: string;
   ddl: string;
+  db_url: string;
 }
 
 const DatabaseSelector = ({ views, onChange = () => {}, userRole }: DatabaseSelectorProps) => {
@@ -26,7 +27,8 @@ const DatabaseSelector = ({ views, onChange = () => {}, userRole }: DatabaseSele
   const [formData, setFormData] = useState<AddViewFormData>({
     view_key: "",
     view_name: "",
-    ddl: ""
+    ddl: "",
+    db_url: ""
   });
 
   const handleViewChange = (value: string) => {
@@ -58,7 +60,7 @@ const DatabaseSelector = ({ views, onChange = () => {}, userRole }: DatabaseSele
       }
 
       // Reset form and close dialog
-      setFormData({ view_key: "", view_name: "", ddl: "" });
+      setFormData({ view_key: "", view_name: "", ddl: "", db_url: "" });
       setIsAddViewOpen(false);
       
       // Refresh the views list
@@ -128,8 +130,20 @@ const DatabaseSelector = ({ views, onChange = () => {}, userRole }: DatabaseSele
                   id="ddl"
                   value={formData.ddl}
                   onChange={handleInputChange}
-                  placeholder="Enter the DDL statements"
+                  placeholder="Provide DDL statement for the view"
                   className="min-h-[100px]"
+                />
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Tip: Provide the DDL for a <strong>single consolidated view</strong>. The system queries this view to process user requests.
+              </p>
+              <div className="grid gap-2">
+                <Label htmlFor="db_url">Database URL</Label>
+                <Input
+                  id="db_url"
+                  value={formData.db_url}
+                  onChange={handleInputChange}
+                  placeholder="postgresql+asyncpg://user:password@localhost:5432/database"
                 />
               </div>
             </div>

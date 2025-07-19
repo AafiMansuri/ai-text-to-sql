@@ -15,7 +15,8 @@ def load_views():
             {
                 "friendly_name": key,
                 "view_name": value["view_name"],
-                "ddl": value["schema"]  # map old "schema" key to new "ddl"
+                "ddl": value["schema"],  # map old "schema" key to new "ddl"
+                "db_url": value.get("db_url", "")  # include db_url if available
             }
             for key, value in raw_data.items()
         ]   
@@ -47,7 +48,8 @@ def add_new_view(view_data: AddViewRequest):
         # Add the new view data in the correct format
         ddl_data[view_data.view_key] = {
             "view_name": view_data.view_name,
-            "schema": view_data.ddl
+            "schema": view_data.ddl,
+            "db_url": view_data.db_url
         }
 
         # Save the updated data back to the file
