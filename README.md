@@ -34,7 +34,7 @@ This project is a full-stack AI-powered application that allows users to query d
 
 **Database Integration Popup (Admin Only):**
 
-<img width="800" height="450" alt="image" src="https://github.com/user-attachments/assets/a6431c7f-d20d-487d-8dff-a78bfd352c68" />
+<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/c8d02525-a14c-4c6c-a558-464ca7580a56" />
 
 ---
 
